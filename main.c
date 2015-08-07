@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <p18f4550.h>
+#include "lcd.h"
 
 
 // PIC18F4550 Configuration Bit Settings
@@ -76,7 +77,6 @@
 
 #define _XTAL_FREQ 8000000 
 
-#define LED LATAbits.LA1
 
 int main(int argc, char** argv) 
 {
@@ -85,11 +85,11 @@ int main(int argc, char** argv)
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF2 = 1;
     
-    TRISAbits.RA1=0; //output LED
-    
-    LED=1;
-
-
+    lcd_init(0b00101100);  //FOUR_BIT define dans xlcd.h
+    lcd_put_string("Bonjour");
+    lcd_put_string("  ");
+    lcd_put_string("Yahou");
+    while(1);
     return (EXIT_SUCCESS);
 }
 
