@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <p18f4550.h>
+#include <plib/timers.h>
 #include "lcd.h"
 
 
@@ -75,30 +76,41 @@
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot block (000000-0007FFh) is not protected from table reads executed in other blocks)
 
-#define _XTAL_FREQ 8000000 
+#define _XTAL_FREQ 8000000
+#define USE_AND_MASKS
 
 #define LED LATDbits.LATD1
 
 void interrupt Button_Pressed(void);
 
-int main(int argc, char** argv) 
+int compteur=0;
+
+int main(int argc, char** argv)
 {
     /*Configuration internal clock to 8Mhz*/
     OSCCONbits.IRCF0 = 1;
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF2 = 1;
     
+    LED=1;
+    
     /*LED output*/
     TRISDbits.RD1=0;
     
-    LED=1;
+    /*RA4 INT0*/
+    TRISAbits.RA4=1;
     
-    /*Ajout de l'interruption sur le port RB0*/
-    TRISBbits.RB0=1;     // Set RB0 to input
-    INTCONbits.INT0E = 1; //enable Interrupt 0 (RB0 as interrupt)
-    INTCON2bits.INTEDG0 = 1; //cause interrupt at rising edge
-    INTCONbits.INT0F = 0; //reset interrupt flag
-    ei();   //(INTCONbits.GIE = 1) //general interrupts
+    /*Config interruption Push Button*/
+    unsigned char Timer0Config;
+    Timer0Config = TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_256 ;
+    //Periode interruption: 50ms
+    
+    OpenTimer0(Timer0Config);
+    WriteTimer0(0xFE78); //50 ms
+    
+    INTCONbits.TMR0IF = 0; //reset Interrupt Flag
+    
+    ei();     //enable general interrupts
     
     lcd_init(FOUR_BIT);  //FOUR_BIT define dans xlcd.h
     lcd_put_string("Bonjour");
@@ -110,10 +122,16 @@ int main(int argc, char** argv)
 
 void interrupt Button_Pressed(void)
 {
-    if (INTCONbits.INT0IF==1)
+    if (INTCONbits.TMR0IF==1)
     {
-        LED=!LED;
-        __delay_ms(50);; //anti-rebond
-        INTCONbits.INT0IF = 0;
+        di();
+        if(PORTAbits.RA4==0)
+        {
+            compteur++;
+            LED=~LED;
+        }
+        INTCONbits.TMR0IF = 0;
+        WriteTimer0(0xFE78); //50 ms
+        ei();
     }
 }
