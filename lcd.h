@@ -39,4 +39,3 @@ void lcd_put_string(char *buffer);
 #endif
 
 #endif	/* LCD_H */
-

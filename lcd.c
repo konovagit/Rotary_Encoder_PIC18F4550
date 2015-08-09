@@ -5,7 +5,7 @@ unsigned char lcd_busy_check(void)
 {
     __delay_us(80);             // Must wait at least 80us after last instruction
                                 // to check busy flag.
-    ei();
+    di();
     RW_PIN = 1;                 // Set the control bits for read
     RS_PIN = 0;
     E_PIN = 1;                  // Clock in the command
@@ -20,7 +20,7 @@ unsigned char lcd_busy_check(void)
         E_PIN = 0;
         _delay(3);              // Data hold time and enable cycle time: Total 1200ns
         RW_PIN = 0;             // Reset control line
-        di();
+        ei();
         return 1;               // Return TRUE
     }
     else                            // Busy bit is low
@@ -33,14 +33,14 @@ unsigned char lcd_busy_check(void)
         E_PIN = 0;
         _delay(3);              // Data hold time and enable cycle time: Total 1200ns
         RW_PIN = 0;             // Reset control line
-        di();
+        ei();
         return 0;               // Return FALSE
     }
 }
 
 void lcd_write_cmd(unsigned char cmd)
 {
-    ei();
+    di();
     TRIS_DATA_PORT &= 0xf0;
     RS_PIN = 0;
     RW_PIN = 0;                     // Set control signals for command
@@ -62,14 +62,14 @@ void lcd_write_cmd(unsigned char cmd)
     _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
 
     TRIS_DATA_PORT |= 0x0f;
-    di();
+    ei();
 
     return;
 }
 
 void lcd_set_ddram_address(unsigned char addr)
 {
-    ei();
+    di();
     TRIS_DATA_PORT &= 0xf0;                 // Make port output
     RW_PIN = 0;                             // Set control bits
     RS_PIN = 0;
@@ -91,14 +91,14 @@ void lcd_set_ddram_address(unsigned char addr)
     _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
 
     TRIS_DATA_PORT |= 0x0f;                 // Make port input
-    di();
+    ei();
 
     return;
 }
 
 void lcd_write_data(char data)
 {
-    ei();
+    di();
     TRIS_DATA_PORT &= 0xf0;
     RS_PIN = 1;                     // Set control bits
     RW_PIN = 0;
@@ -120,7 +120,7 @@ void lcd_write_data(char data)
     _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
 
     TRIS_DATA_PORT |= 0x0f;
-    di();
+    ei();
 
     return;
 }

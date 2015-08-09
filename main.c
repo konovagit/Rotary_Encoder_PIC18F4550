@@ -42,7 +42,7 @@
 
 // CONFIG4L
 #pragma config STVREN = ON      // Stack Full/Underflow Reset Enable bit (Stack full/underflow will cause Reset)
-#pragma config LVP = ON         // Single-Supply ICSP Enable bit (Single-Supply ICSP enabled)
+#pragma config LVP = ON        // Single-Supply ICSP Enable bit (Single-Supply ICSP enabled)
 #pragma config ICPRT = OFF      // Dedicated In-Circuit Debug/Programming Port (ICPORT) Enable bit (ICPORT disabled)
 #pragma config XINST = OFF      // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode disabled (Legacy mode))
 
@@ -76,46 +76,52 @@
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot block (000000-0007FFh) is not protected from table reads executed in other blocks)
 
-#define _XTAL_FREQ 8000000
+#define _XTAL_FREQ 8000000 
 #define USE_AND_MASKS
 
-#define LED LATDbits.LATD1
+#define LED LATCbits.LATC2
+#define BUTTON PORTAbits.RA4
+#define PHASE_A PORTDbits.RD3
+#define PHASE_B PORTDbits.RD2
 
 void interrupt Button_Pressed(void);
 
-int compteur=0;
+int cpt=0;
+unsigned char PHASE_A_PREC=0;
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) 
 {
     /*Configuration internal clock to 8Mhz*/
     OSCCONbits.IRCF0 = 1;
     OSCCONbits.IRCF1 = 1;
     OSCCONbits.IRCF2 = 1;
-    
-    LED=1;
-    
+   
     /*LED output*/
-    TRISDbits.RD1=0;
+    TRISCbits.RC2=0;
     
-    /*RA4 INT0*/
+    /*Push button encodeur*/ 
     TRISAbits.RA4=1;
     
-    /*Config interruption Push Button*/
-    unsigned char Timer0Config;
-    Timer0Config = TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_256 ;
-    //Periode interruption: 50ms
+    /*Phases A et B de l'encodeur */
+    TRISDbits.RD3=1;
+    TRISDbits.RD2=1;
     
+   /*Config interruption encodeur */
+    unsigned char Timer0Config;
+    Timer0Config = TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_2 ;  
     OpenTimer0(Timer0Config);
-    WriteTimer0(0xFE78); //50 ms
+    WriteTimer0(0x0006); //4khz 
     
     INTCONbits.TMR0IF = 0; //reset Interrupt Flag
-    
+
+    INTCONbits.PEIE=1; //periph interrupts 
     ei();     //enable general interrupts
     
-    lcd_init(FOUR_BIT);  //FOUR_BIT define dans xlcd.h
-    lcd_put_string("Bonjour");
-    
-    while(1);
+    while(1)
+    {
+        LED=0;
+    }
+
     return (EXIT_SUCCESS);
 }
 
@@ -124,14 +130,37 @@ void interrupt Button_Pressed(void)
 {
     if (INTCONbits.TMR0IF==1)
     {
-        di();
-        if(PORTAbits.RA4==0)
+        if(BUTTON==0) //push button
         {
-            compteur++;
-            LED=~LED;
+        LED=1;
+        cpt=0;
+        __delay_ms(50);
         }
-        INTCONbits.TMR0IF = 0;
-        WriteTimer0(0xFE78); //50 ms
-        ei();
+        if((PHASE_A==0)&&(PHASE_A_PREC==1)) 
+        {
+            //Front descendant
+            if(PHASE_B==1) 
+            {
+                //Sens Horaire
+                if(cpt<25) 
+                {
+                    LED=1;
+                    cpt++;
+                }
+                   
+            }
+            else
+            {
+                //Sens Anti-Horaire
+                if(cpt>0) 
+                {
+                    LED=1;
+                    cpt--;
+                }
+            }
+        }
+        PHASE_A_PREC=PHASE_A;
+        WriteTimer0(0x0006); //4khz
+        INTCONbits.TMR0IF=0;
     }
 }
