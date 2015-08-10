@@ -1,6 +1,7 @@
 # Rotary_Encoder_PIC18F4550
 
-Il s'agit d'une librairie pour utiliser un **encodeur rotatif**. J'ai écrit cette librairie pour le microcontrôleur **Microchip PIC18F4550**. Cependant, cette librairie est portable à l'ensemble des microcontrôleurs Microchip.
+Il s'agit d'une librairie pour utiliser un **encodeur rotatif**. Vous trouverez aussi une librairie pour utiliser un
+**LCD 16x2**. J'ai écrit cette librairie pour le microcontrôleur **Microchip PIC18F4550**. Cependant, cette librairie est portable à l'ensemble des microcontrôleurs Microchip.
 
 **Cible**:PIC18F4550<br/>
 **Horloge Interne**: 8MHz<br/>
