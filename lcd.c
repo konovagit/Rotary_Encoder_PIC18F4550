@@ -1,5 +1,4 @@
 #include "lcd.h"
-#define _XTAL_FREQ 8000000 
 
 unsigned char lcd_busy_check(void)
 {
@@ -9,29 +8,30 @@ unsigned char lcd_busy_check(void)
     RW_PIN = 1;                 // Set the control bits for read
     RS_PIN = 0;
     E_PIN = 1;                  // Clock in the command
-    _delay(2);                  // Data setup time: Max 320ns Actual 400ns
+    __delay_us(1);
+    
     if(DATA_PORT&0x08)
     {
-        _delay(1);              // Remainder of enable pulse width: Min 480ns Actual 600ns
+        __delay_us(1);
         E_PIN = 0;              // Reset clock line
-        _delay(3);              // Data hold time and enable cycle time: Total 1200ns
+        __delay_us(1);
         E_PIN = 1;              // Clock out other nibble
-        _delay(3);              // Data setup time: Max 320ns Actual 400ns
+        __delay_us(1);
         E_PIN = 0;
-        _delay(3);              // Data hold time and enable cycle time: Total 1200ns
+        __delay_us(1);
         RW_PIN = 0;             // Reset control line
         ei();
         return 1;               // Return TRUE
     }
     else                            // Busy bit is low
     {
-        _delay(1);              // Remainder of enable pulse width: Min 480ns Actual 600ns
+        __delay_us(1);
         E_PIN = 0;              // Reset clock line
-        _delay(3);              // Data hold time and enable cycle time: Total 1200ns
+        __delay_us(1);
         E_PIN = 1;              // Clock out other nibble
-        _delay(3);              // Data setup time: Max 320ns Actual 400ns
+        __delay_us(1);
         E_PIN = 0;
-        _delay(3);              // Data hold time and enable cycle time: Total 1200ns
+        __delay_us(1);
         RW_PIN = 0;             // Reset control line
         ei();
         return 0;               // Return FALSE
@@ -48,19 +48,16 @@ void lcd_write_cmd(unsigned char cmd)
     DATA_PORT &= 0xf0;
     DATA_PORT |= (cmd>>4)&0x0f;
     E_PIN = 1;                      // Clock command in
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
+    
     DATA_PORT &= 0xf0;
     DATA_PORT |= cmd&0x0f;
     E_PIN = 1;                      // Clock command in
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
     TRIS_DATA_PORT |= 0x0f;
     ei();
 
@@ -77,19 +74,17 @@ void lcd_set_ddram_address(unsigned char addr)
     DATA_PORT &= 0xf0;                      // and write upper nibble
     DATA_PORT |= (((addr | 0b10000000)>>4) & 0x0f);
     E_PIN = 1;                              // Clock the cmd and address in
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
+    
     DATA_PORT &= 0xf0;                      // Write lower nibble
     DATA_PORT |= (addr&0x0f);
     E_PIN = 1;                              // Clock the cmd and address in
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
+    
     TRIS_DATA_PORT |= 0x0f;                 // Make port input
     ei();
 
@@ -106,19 +101,17 @@ void lcd_write_data(char data)
     DATA_PORT &= 0xf0;
     DATA_PORT |= ((data>>4)&0x0f);
     E_PIN = 1;                      // Clock nibble into LCD
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
+    
     DATA_PORT &= 0xf0;
     DATA_PORT |= (data&0x0f);
     E_PIN = 1;                      // Clock nibble into LCD
-    _delay(1);                      // Data setup time: Max 80ns Actual 200ns
-    _delay(2);                      // Remainder of enable pulse width: Min 460ns Actual 600ns
+    __delay_us(1);
     E_PIN = 0;
-    _delay(3);                      // Data hold time and enable cycle time: Total 1200ns
-
+    __delay_us(1);
+    
     TRIS_DATA_PORT |= 0x0f;
     ei();
 

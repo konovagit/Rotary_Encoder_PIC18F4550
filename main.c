@@ -84,7 +84,7 @@
 #define PHASE_A PORTDbits.RD3
 #define PHASE_B PORTDbits.RD2
 
-void interrupt Button_Pressed(void);
+void interrupt Encoder(void);
 
 int cpt=0;
 unsigned char PHASE_A_PREC=0;
@@ -117,6 +117,8 @@ int main(int argc, char** argv)
     INTCONbits.PEIE=1; //periph interrupts 
     ei();     //enable general interrupts
     
+    lcd_init(FOUR_BIT);
+    lcd_put_string("Hello World");
     while(1)
     {
         LED=0;
@@ -126,7 +128,7 @@ int main(int argc, char** argv)
 }
 
 
-void interrupt Button_Pressed(void)
+void interrupt Encoder(void)
 {
     if (INTCONbits.TMR0IF==1)
     {

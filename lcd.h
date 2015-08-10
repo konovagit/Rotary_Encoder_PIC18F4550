@@ -7,6 +7,7 @@ extern "C" {
 #include <p18f4550.h>    
     
 #define _XTAL_FREQ 8000000 
+    
 //Pour enlever les Warnings et redefinir
 #undef DATA_PORT
 #undef TRIS_DATA_PORT
