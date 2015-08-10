@@ -8,4 +8,12 @@ Il s'agit d'une librairie pour utiliser un **encodeur rotatif**. J'ai écrit cet
 
 **Datasheet**:[Lien](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/rotary_encoder.pdf)
 
+**LCD en mode 4 bits**<br/>
+![](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/lcd.png)
+
+Le port VEE (souvent V0) avec la résistance permet de changer le contraste de votre LCD. Vous pouvez ajouter un potentiometre pour le régler manuelement.
+
+**Encodeur Rotatif**<br/>
+![](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/rotary_encoder.png)
+
 
