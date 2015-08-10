@@ -7,7 +7,7 @@ Il s'agit d'une librairie pour utiliser un **encodeur rotatif**. Vous trouverez 
 **Horloge Interne**: 8MHz<br/>
 **Compilateur**: XC8 V1.34
 
-**Datasheet**:[Lien](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/rotary_encoder.pdf)
+**Datasheet encoder**:[Lien](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/rotary_encoder.pdf)
 
 **LCD en mode 4 bits**<br/>
 ![](https://github.com/konovagit/Rotary_Encoder_PIC18F4550/blob/master/lcd.png)
